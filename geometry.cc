@@ -30,7 +30,9 @@ Vector *Vector::operator+=(Vector vec) {
     return this;
 }
 
-Position const Position::orig = Position(0, 0);
+Position const Position::orig = Position(0, 0); // to zbędne, lepiej zrób to
+                                                   // jako stałą statyczną
+                                                   // w metodzie origin()
 
 Position::Position(int x, int y) {
     x_coordinate = x;
