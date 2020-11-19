@@ -5,18 +5,15 @@
 
 #include <vector>
 
-/*
- * Popraw proszę operatory do takich, jak je opisałem tu w pliku .h
- * (const, referencje - NIE używaj wskaźników!)
- * */
-
 class Vector {
 public:
     Vector(int x, int y);
     [[nodiscard]] int x() const;
     [[nodiscard]] int y() const;
     Vector reflection();
+    bool operator==(const Vector&) const;
     Vector& operator+=(const Vector&);
+
 private:
     int x_coordinate;
     int y_coordinate;
@@ -78,8 +75,6 @@ Rectangle merge_horizontally(Rectangle& rect1, Rectangle& rect2);
 Rectangle merge_vertically(Rectangle& rect1, Rectangle& rect2);
 
 Rectangle merge_all(Rectangles& rectangles);
-
-bool operator==(const Position& pos1, const Position& pos2);
 
 bool operator==(const Vector& vec1, const Vector& vec2);
 

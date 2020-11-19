@@ -21,10 +21,6 @@ Vector Vector::reflection() {
     return Vector(y_coordinate, x_coordinate);
 }
 
-Vector &Vector::operator+=(const Vector &) {
-    return <#initializer#>;
-}
-
 
 bool Vector::operator==(const Vector &vec) const {
 
@@ -57,15 +53,6 @@ Position Position::reflection() {
 Position Position::origin() {
     static const Position orig(0, 0);
     return orig;
-}
-
-
-Position &Position::operator+=(const Vector &) {
-    return <#initializer#>;
-}
-
-bool operator==(const Position& pos1, const Position& pos2) {
-    return pos1.x() == pos2.x() && pos1.y() == pos2.y();
 }
 
 
