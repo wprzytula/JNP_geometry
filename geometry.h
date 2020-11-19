@@ -9,8 +9,8 @@
 class Vector {
 public:
     Vector(int x, int y);
-    int x();
-    int y();
+    [[nodiscard]] int x() const;
+    [[nodiscard]] int y() const;
     Vector reflection();
     bool operator==(const Vector&) const;
     Vector& operator+=(const Vector&);
@@ -22,14 +22,13 @@ private:
 class Position {
 public:
     Position(int x, int y);
-    int x();
-    int y();
+    [[nodiscard]] int x() const;
+    [[nodiscard]] int y() const;
     Position reflection();
-    static const Position origin();
+    static Position origin();
     bool operator==(const Position&) const;
-    Position& operator+=(const Position&);
+    Position& operator+=(const Vector&);
 private:
-    static Position const orig; // to nie ma sensu, patrz .cc
     int x_coordinate;
     int y_coordinate;
 };
@@ -54,6 +53,7 @@ class Rectangles {
 public:
     Rectangles({Rectangle});
 };
+
 
 Rectangle merge_horizontally(Rectangle& rect1, Rectangle& rect2);
 

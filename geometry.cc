@@ -1,18 +1,15 @@
-#include <iostream>
 #include "geometry.h"
-
-using namespace std;
 
 Vector::Vector(int x, int y) {
     x_coordinate = x;
     y_coordinate = y;
 }
 
-int Vector::x() {
+int Vector::x() const {
     return x_coordinate;
 }
 
-int Vector::y() {
+int Vector::y() const {
     return y_coordinate;
 }
 
@@ -20,30 +17,26 @@ Vector Vector::reflection() {
     return Vector(y_coordinate, x_coordinate);
 }
 
-bool Vector::operator==(Vector vec) {
+bool Vector::operator==(const Vector &vec) const {
     return (x_coordinate == vec.x() && y_coordinate == vec.y());
 }
 
-Vector *Vector::operator+=(Vector vec) {
+Vector& Vector::operator+=(const Vector& vec) {
     x_coordinate += vec.x();
     y_coordinate += vec.y();
-    return this;
+    return *this;
 }
-
-Position const Position::orig = Position(0, 0); // to zbędne, lepiej zrób to
-                                                   // jako stałą statyczną
-                                                   // w metodzie origin()
 
 Position::Position(int x, int y) {
     x_coordinate = x;
     y_coordinate = y;
 }
 
-int Position::x() {
+int Position::x() const {
     return x_coordinate;
 }
 
-int Position::y() {
+int Position::y() const {
     return y_coordinate;
 }
 
@@ -52,15 +45,16 @@ Position Position::reflection() {
 }
 
 Position Position::origin() {
+    static const Position orig(0, 0);
     return orig;
 }
 
-bool Position::operator==(Position pos) {
+bool Position::operator==(const Position& pos) const {
     return (x_coordinate == pos.x() && y_coordinate == pos.y());
 }
 
-Position *Position::operator+=(Vector vec) {
+Position& Position::operator+=(const Vector& vec) {
     x_coordinate += vec.x();
     y_coordinate += vec.y();
-    return this;
+    return *this;
 }
