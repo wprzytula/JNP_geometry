@@ -1,6 +1,11 @@
 #ifndef GEOMETRY_H
 #define GEOMETRY_H
 
+/*
+ * Popraw proszę operatory do takich, jak je opisałem tu w pliku .h
+ * (const, referencje - NIE używaj wskaźników!)
+ * */
+
 class Vector {
 public:
     Vector(int x, int y);
@@ -48,6 +53,7 @@ class Rectangles {
 public:
     Rectangles({Rectangle});
 };
+
 
 Rectangle merge_horizontally(Rectangle& rect1, Rectangle& rect2);
 
