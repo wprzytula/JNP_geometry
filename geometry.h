@@ -5,6 +5,7 @@
 
 #include <vector>
 #include <cstdint>
+#include <cassert>
 
 /*
  * Popraw proszę operatory do takich, jak je opisałem tu w pliku .h
@@ -62,28 +63,19 @@ private:
 
 class Rectangles {
 public:
-    Rectangles();
+    Rectangles() = default;
     Rectangles(std::initializer_list<Rectangle>);
     Rectangles(const Rectangles&);
     Rectangles(Rectangles&&) noexcept;
     Rectangles& operator=(const Rectangles&) = default;
-    Rectangles& operator=(Rectangles&&) = default;
-    Rectangle& operator[](int32_t i);
+    Rectangles& operator=(Rectangles&&) noexcept = default;
+    ~Rectangles() = default;
     const Rectangle& operator[](int32_t i) const;
-    size_t size() const;
+    Rectangle& operator[](int32_t i);
     Rectangles& operator+=(const Vector& vec);
+    size_t size() const;
     friend Rectangle merge_all(const Rectangles& rectangles);
 
-//    Rectangles() = default;
-//    Rectangles(const Rectangles&) {
-//        assert(((void)"Used copy constructor", false));
-//    }
-//    Rectangles& operator=(const Rectangles&) {
-//        assert(((void)"Used copy assignment", false));
-//    }
-//    Rectangles(Rectangles&&) noexcept = default;
-//    Rectangles& operator=(Rectangles&&) noexcept = default;
-//    ~Rectangles() = default;
 private:
     std::vector<Rectangle> rectangles;
 };
@@ -115,6 +107,10 @@ Rectangle operator+(const Vector& vec, const Rectangle& rect);
 
 Rectangles operator+(const Rectangles& rects, const Vector& vec);
 
+Rectangles operator+(Rectangles&& rects, const Vector& vec);
+
 Rectangles operator+(const Vector& vec, const Rectangles& rects);
 
-#endif
+Rectangles operator+(const Vector& vec, Rectangles&& rects);
+
+#endif // GEOMETRY_H

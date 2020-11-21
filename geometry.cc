@@ -113,8 +113,6 @@ size_t Rectangles::size() const {
     return rectangles.size();
 }
 
-Rectangles::Rectangles() = default;
-
 Rectangle& Rectangles::operator[](int32_t i) {
     assert(i < size());
     return rectangles[i];
@@ -219,11 +217,15 @@ Rectangles operator+(const Rectangles& rects, const Vector& vec) {
 }
 
 Rectangles operator+(Rectangles&& rects, const Vector& vec) {
-    Rectangles new_rects(rects);
+    Rectangles new_rects(std::move(rects));
     new_rects += vec;
     return new_rects;
 }
 
 Rectangles operator+(const Vector& vec, const Rectangles& rects) {
     return rects + vec;
+}
+
+Rectangles operator+(const Vector& vec, Rectangles&& rects) {
+    return std::move(rects) + vec;
 }
