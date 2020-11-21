@@ -4,49 +4,54 @@
 #define GEOMETRY_H
 
 #include <vector>
+#include <cstdint>
 
 /*
  * Popraw proszę operatory do takich, jak je opisałem tu w pliku .h
  * (const, referencje - NIE używaj wskaźników!)
  * */
+class Position;
 
 class Vector {
 public:
-    Vector(int x, int y);
-    [[nodiscard]] int x() const;
-    [[nodiscard]] int y() const;
-    Vector reflection();
+    Vector(int32_t x, int32_t y);
+    explicit Vector(const Position&);
+//    explicit Vector(Position&&);
+    [[nodiscard]] int32_t x() const;
+    [[nodiscard]] int32_t y() const;
+    Vector reflection() const;
     Vector& operator+=(const Vector&);
 private:
-    int x_coordinate;
-    int y_coordinate;
+    int32_t x_coordinate;
+    int32_t y_coordinate;
 };
 
 class Position {
 public:
-    Position(int x, int y);
-    [[nodiscard]] int x() const;
-    [[nodiscard]] int y() const;
-    Position reflection();
+    Position(int32_t x, int32_t y);
+    explicit Position(const Vector&);
+//    explicit Position(Vector&&);
+    [[nodiscard]] int32_t x() const;
+    [[nodiscard]] int32_t y() const;
+    Position reflection() const;
     static Position origin();
-    bool operator==(const Position&) const;
     Position& operator+=(const Vector&);
 private:
-    int x_coordinate;
-    int y_coordinate;
+    int32_t x_coordinate;
+    int32_t y_coordinate;
 };
 
 
 class Rectangle {
 public:
-    Rectangle(int width, int height, Position pos);
-    Rectangle(int width, int height);
-    int width() const;
-    int height() const;
+    Rectangle(int32_t width, int32_t height, Position pos);
+    Rectangle(int32_t width, int32_t height);
+    int32_t width() const;
+    int32_t height() const;
     const Position & pos() const;
-    Rectangle reflection();
+    Rectangle reflection() const;
     Rectangle& operator+=(const Vector& vec);
-    long area();
+    int64_t area() const;
     friend Rectangle merge_horizontally(const Rectangle& rect1, const Rectangle& rect2);
     friend Rectangle merge_vertically(const Rectangle& rect1, const Rectangle& rect2);
 private:
@@ -62,22 +67,25 @@ class Rectangles {
 public:
     Rectangles();
     Rectangles(std::initializer_list<Rectangle>);
-    Rectangle& operator[](int i);
-    const Rectangle& operator[](int i) const;
+    Rectangles(const Rectangles&);
+    Rectangles(Rectangles&&);
+    Rectangles& operator=(const Rectangles&) = default;
+    Rectangles& operator=(Rectangles&&) = default;
+    Rectangle& operator[](int32_t i);
+    const Rectangle& operator[](int32_t i) const;
     size_t size() const;
     Rectangles& operator+=(const Vector& vec);
     friend Rectangle merge_all(const Rectangles& rectangles);
-    friend Rectangle merge_all(Rectangles&& rectangles);
 private:
     std::vector<Rectangle> rectangles;
 };
 
 
-Rectangle merge_horizontally(Rectangle& rect1, Rectangle& rect2);
+Rectangle merge_horizontally(const Rectangle& rect1, const Rectangle& rect2);
 
-Rectangle merge_vertically(Rectangle& rect1, Rectangle& rect2);
+Rectangle merge_vertically(const Rectangle& rect1, const Rectangle& rect2);
 
-Rectangle merge_all(Rectangles& rectangles);
+Rectangle merge_all(const Rectangles& rectangles);
 
 bool operator==(const Position& pos1, const Position& pos2);
 
