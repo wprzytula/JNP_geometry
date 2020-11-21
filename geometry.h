@@ -34,7 +34,7 @@ public:
     [[nodiscard]] int32_t x() const;
     [[nodiscard]] int32_t y() const;
     Position reflection() const;
-    static Position origin();
+    static const Position& origin();
     Position& operator+=(const Vector&);
 private:
     int32_t x_coordinate;
@@ -52,15 +52,12 @@ public:
     Rectangle reflection() const;
     Rectangle& operator+=(const Vector& vec);
     int64_t area() const;
-    friend Rectangle merge_horizontally(const Rectangle& rect1, const Rectangle& rect2);
-    friend Rectangle merge_vertically(const Rectangle& rect1, const Rectangle& rect2);
 private:
     Position left_bottom_corner;
-    Position right_bottom_corner;
-    Position left_top_corner;
-    Position right_top_corner;
-    Rectangle(Position left_bottom_corner, Position right_bottom_corner,
-            Position left_top_corner, Position right_top_corner);
+    int32_t w;
+    int32_t h;
+//    Rectangle(Position left_bottom_corner, Position right_bottom_corner,
+//            Position left_top_corner, Position right_top_corner);
 };
 
 class Rectangles {
@@ -68,7 +65,7 @@ public:
     Rectangles();
     Rectangles(std::initializer_list<Rectangle>);
     Rectangles(const Rectangles&);
-    Rectangles(Rectangles&&);
+    Rectangles(Rectangles&&) noexcept;
     Rectangles& operator=(const Rectangles&) = default;
     Rectangles& operator=(Rectangles&&) = default;
     Rectangle& operator[](int32_t i);
@@ -76,6 +73,17 @@ public:
     size_t size() const;
     Rectangles& operator+=(const Vector& vec);
     friend Rectangle merge_all(const Rectangles& rectangles);
+
+//    Rectangles() = default;
+//    Rectangles(const Rectangles&) {
+//        assert(((void)"Used copy constructor", false));
+//    }
+//    Rectangles& operator=(const Rectangles&) {
+//        assert(((void)"Used copy assignment", false));
+//    }
+//    Rectangles(Rectangles&&) noexcept = default;
+//    Rectangles& operator=(Rectangles&&) noexcept = default;
+//    ~Rectangles() = default;
 private:
     std::vector<Rectangle> rectangles;
 };

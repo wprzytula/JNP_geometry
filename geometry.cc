@@ -2,7 +2,6 @@
 #include "geometry.h"
 
 
-#pragma ide diagnostic ignored "OCUnusedGlobalDeclarationInspection"
 using namespace std;
 
 Vector::Vector(int32_t x, int32_t y) {
@@ -57,7 +56,7 @@ Position Position::reflection() const {
     return Position(y_coordinate, x_coordinate);
 }
 
-Position Position::origin() {
+const Position& Position::origin() {
     static const Position orig(0, 0);
     return orig;
 }
@@ -72,50 +71,34 @@ Position& Position::operator+=(const Vector& vec) {
     return *this;
 }
 
-
-
 Rectangle::Rectangle(int32_t width, int32_t height, Position pos)
     : left_bottom_corner(pos)
-    , left_top_corner(Position{pos.x(), pos.y() + height})
-    , right_bottom_corner(Position{pos.x() + width, pos.y()})
-    , right_top_corner(Position{pos.x() + width, pos.y() + height}) {}
+    , w(width)
+    , h(height)
+    {assert(width > 0 && height > 0);}
 
 Rectangle::Rectangle(int32_t width, int32_t height) :
     Rectangle(width, height, {0, 0}) {}
 
 
 int32_t Rectangle::width() const {
-    return right_bottom_corner.x() - left_bottom_corner.x();
+    return w;
 }
 
 int32_t Rectangle::height() const {
-    return left_top_corner.y() - left_bottom_corner.y();
+    return h;
 }
 
 const Position & Rectangle::pos() const {
     return left_bottom_corner;
 }
 
-#pragma ide diagnostic ignored "ArgumentSelectionDefects"
 Rectangle Rectangle::reflection() const{
-    return Rectangle{{right_top_corner.y(), right_bottom_corner.x()},
-                     {left_top_corner.y(), left_top_corner.x()},
-                     {right_bottom_corner.y(), right_bottom_corner.x()},
-                     {left_bottom_corner.y(), left_bottom_corner.x()}};
+    return Rectangle{h, w, left_bottom_corner.reflection()};
 }
-
-Rectangle::Rectangle(Position left_bottom_corner, Position right_bottom_corner,
-                     Position left_top_corner, Position right_top_corner) :
-                     left_bottom_corner(left_bottom_corner),
-                     right_bottom_corner(right_bottom_corner),
-                     left_top_corner(left_top_corner),
-                     right_top_corner(right_top_corner) {}
 
 Rectangle& Rectangle::operator+=(const Vector& vec) {
     left_bottom_corner += vec;
-    left_top_corner += vec;
-    right_bottom_corner += vec;
-    right_top_corner += vec;
     return *this;
 }
 
@@ -133,11 +116,13 @@ size_t Rectangles::size() const {
 Rectangles::Rectangles() = default;
 
 Rectangle& Rectangles::operator[](int32_t i) {
+    assert(i < size());
     return rectangles[i];
 }
 
 const Rectangle& Rectangles::operator[](int32_t i) const {
-    return /*const_cast<Rectangle &>*/(rectangles[i]);
+    assert(i < size());
+    return rectangles[i];
 }
 
 Rectangles& Rectangles::operator+=(const Vector& vec) {
@@ -147,37 +132,37 @@ Rectangles& Rectangles::operator+=(const Vector& vec) {
     return *this;
 }
 
-
 bool horizontal_merge_possible(const Rectangle& rect1, const Rectangle& rect2) {
     return (rect1.width() == rect2.width() && rect1.pos().x() == rect2.pos().x() &&
-            rect1.pos().y() + rect1.height() == rect1.pos().y());
+            rect1.pos().y() + rect1.height() == rect2.pos().y());
 }
 
 bool vertical_merge_possible(const Rectangle& rect1, const Rectangle& rect2) {
     return (rect1.height() == rect2.height() && rect1.pos().y() == rect2.pos().y() &&
-            rect1.pos().x() + rect1.width() == rect1.pos().x());
+            rect1.pos().x() + rect1.width() == rect2.pos().x());
 }
 
 Rectangle merge_horizontally(const Rectangle& rect1, const Rectangle& rect2) {
     assert(horizontal_merge_possible(rect1, rect2));
-    return {rect1.left_bottom_corner, rect1.right_bottom_corner,
-            rect2.left_top_corner, rect2.right_top_corner};
+    return {rect1.width(), rect1.height() + rect2.height(),
+            rect1.pos()};
 }
 
 Rectangle merge_vertically(const Rectangle& rect1, const Rectangle& rect2) {
     assert(vertical_merge_possible(rect1, rect2));
-    return {rect1.left_bottom_corner, rect2.right_bottom_corner,
-            rect1.left_top_corner, rect2.right_top_corner};
+    return {rect1.width() + rect2.width(), rect1.height(), rect1.pos()};
 }
 
 Rectangle merge_all(const Rectangles& rects) {
     Rectangle result = rects.rectangles[0];
     for (auto it = rects.rectangles.begin() + 1,
             end = rects.rectangles.end(); it < end; ++it) {
+        assert(horizontal_merge_possible(result, *it) ||
+               vertical_merge_possible(result, *it));
         if (horizontal_merge_possible(result, *it)) {
-            result = merge_horizontally(result, *it++);
+            result = merge_horizontally(result, *it);
         } else if (vertical_merge_possible(result, *it)) {
-            result = merge_vertically(result, *it++);
+            result = merge_vertically(result, *it);
         } else {
             assert(false);
         }
@@ -188,12 +173,12 @@ Rectangle merge_all(const Rectangles& rects) {
 Rectangles::Rectangles(const Rectangles& rects)
     : rectangles(rects.rectangles) {}
 
-Rectangles::Rectangles(Rectangles&& rects)
+Rectangles::Rectangles(Rectangles&& rects) noexcept
     : rectangles(std::move(rects.rectangles)) {}
 
 bool operator==(const Rectangle& rec1, const Rectangle& rec2) {
     return rec1.pos() == rec2.pos() &&
-           rec1.width() == rec2.width() && rec2.height() == rec2.height();
+           rec1.width() == rec2.width() && rec1.height() == rec2.height();
 }
 
 bool operator==(const Rectangles& rects1, const Rectangles& rects2) {
@@ -219,11 +204,6 @@ Vector operator+(const Vector& vec1, const Vector& vec2) {
 
 }
 
-//Rectangle operator+(const Rectangle& rect, const Vector& vec) {
-//    return {rect.width(), rect.height(),
-//            {rect.pos().x() + vec.x(), rect.pos().y()}};
-//}
-// TODO: which one? Below or above?
 Rectangle operator+(const Rectangle& rect, const Vector& vec) {
     return {rect.width(), rect.height(), rect.pos() + vec};
 }
