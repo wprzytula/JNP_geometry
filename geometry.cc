@@ -168,11 +168,11 @@ Rectangle merge_all(const Rectangles& rects) {
     return result;
 }
 
-Rectangles::Rectangles(const Rectangles& rects)
-    : rectangles(rects.rectangles) {}
-
-Rectangles::Rectangles(Rectangles&& rects) noexcept
-    : rectangles(std::move(rects.rectangles)) {}
+//Rectangles::Rectangles(const Rectangles& rects)
+//    : rectangles(rects.rectangles) {}
+//
+//Rectangles::Rectangles(Rectangles&& rects) noexcept
+//    : rectangles(std::move(rects.rectangles)) {}
 
 bool operator==(const Rectangle& rec1, const Rectangle& rec2) {
     return rec1.pos() == rec2.pos() &&

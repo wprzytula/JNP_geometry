@@ -17,7 +17,6 @@ class Vector {
 public:
     Vector(int32_t x, int32_t y);
     explicit Vector(const Position&);
-//    explicit Vector(Position&&);
     [[nodiscard]] int32_t x() const;
     [[nodiscard]] int32_t y() const;
     Vector reflection() const;
@@ -31,7 +30,6 @@ class Position {
 public:
     Position(int32_t x, int32_t y);
     explicit Position(const Vector&);
-//    explicit Position(Vector&&);
     [[nodiscard]] int32_t x() const;
     [[nodiscard]] int32_t y() const;
     Position reflection() const;
@@ -57,19 +55,17 @@ private:
     Position left_bottom_corner;
     int32_t w;
     int32_t h;
-//    Rectangle(Position left_bottom_corner, Position right_bottom_corner,
-//            Position left_top_corner, Position right_top_corner);
 };
 
 class Rectangles {
 public:
     Rectangles() = default;
     Rectangles(std::initializer_list<Rectangle>);
-    Rectangles(const Rectangles&);
-    Rectangles(Rectangles&&) noexcept;
+    Rectangles(const Rectangles&) = default;
+    Rectangles(Rectangles&&) noexcept = default;
+    ~Rectangles() = default;
     Rectangles& operator=(const Rectangles&) = default;
     Rectangles& operator=(Rectangles&&) noexcept = default;
-    ~Rectangles() = default;
     const Rectangle& operator[](int32_t i) const;
     Rectangle& operator[](int32_t i);
     Rectangles& operator+=(const Vector& vec);
