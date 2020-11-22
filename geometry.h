@@ -3,12 +3,7 @@
 
 #include <vector>
 #include <cstdint>
-#include <cassert>
 
-/*
- * Popraw proszę operatory do takich, jak je opisałem tu w pliku .h
- * (const, referencje - NIE używaj wskaźników!)
- * */
 class Position;
 
 class Vector {
