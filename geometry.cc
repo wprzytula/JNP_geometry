@@ -8,8 +8,7 @@ const bool debug = true;
     do { \
         if (debug) { \
             assert(expression); \
-        } \
-        else { \
+        } else { \
             if (!(expression)) \
                 exit(1); \
         } \
@@ -95,7 +94,8 @@ Rectangle::Rectangle(long width, long height, Position pos)
     {safe_assert(width > 0 && height > 0);}
 
 Rectangle::Rectangle(long width, long height) :
-    Rectangle(width, height, {0, 0}) {}
+    Rectangle(width, height, {0, 0})
+    {safe_assert(width > 0 && height > 0);}
 
 
 long Rectangle::width() const {
@@ -131,12 +131,12 @@ size_t Rectangles::size() const {
 }
 
 Rectangle& Rectangles::operator[](long i) {
-    safe_assert(i < size());
+    safe_assert(i >= 0 && i < size());
     return rectangles[i];
 }
 
 const Rectangle& Rectangles::operator[](long i) const {
-    safe_assert(i < size());
+    safe_assert(i >= 0 && i < size());
     return rectangles[i];
 }
 
@@ -176,10 +176,9 @@ Rectangle merge_all(const Rectangles& rects) {
                vertical_merge_possible(result, *it));
         if (horizontal_merge_possible(result, *it)) {
             result = merge_horizontally(result, *it);
-        } else if (vertical_merge_possible(result, *it)) {
-            result = merge_vertically(result, *it);
         } else {
-            safe_assert(false);
+            /* Vertical merge possible */
+            result = merge_vertically(result, *it);
         }
     }
     return result;
