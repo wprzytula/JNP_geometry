@@ -76,7 +76,7 @@ Należy też zaimplementować operacje
 łączące dwa prostokąty odpowiednio wzdłuż osi X lub Y oraz zwracające wynik typu
 Rectangle. Funkcja merge_horizontally łączy dwa prostokąty ze wspólną krawędzią,
 będącą górną krawędzią pierwszego prostokąta i dolną krawędzią drugiego
-prostokąta, a funkcja merge_horizontally łączy dwa prostokąty ze wspólną
+prostokąta, a funkcja merge_vertically łączy dwa prostokąty ze wspólną
 krawędzią, będącą prawą krawędzią pierwszego prostokąta i lewą krawędzią
 drugiego prostokąta.
 
