@@ -189,17 +189,16 @@ bool operator==(const Rectangles& rects1, const Rectangles& rects2) {
     return true;
 }
 
-//TODO!
 Position operator+(const Vector& vec, const Position& pos) {
     return pos + vec;
 }
 
 Position operator+(const Position& pos, const Vector& vec) {
-
+    return {pos.x() + vec.x(), pos.y() + vec.y()};
 }
 
 Vector operator+(const Vector& vec1, const Vector& vec2) {
-
+    return {vec1.x() + vec2.x(), vec1.y() + vec2.y()};
 }
 
 Rectangle operator+(const Rectangle& rect, const Vector& vec) {
