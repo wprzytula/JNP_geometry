@@ -1,5 +1,3 @@
-#pragma ide diagnostic ignored "modernize-use-nodiscard"
-#pragma ide diagnostic ignored "OCUnusedGlobalDeclarationInspection"
 #ifndef GEOMETRY_H
 #define GEOMETRY_H
 
@@ -15,46 +13,46 @@ class Position;
 
 class Vector {
 public:
-    Vector(int32_t x, int32_t y);
+    Vector(long x, long y);
     explicit Vector(const Position&);
-    [[nodiscard]] int32_t x() const;
-    [[nodiscard]] int32_t y() const;
-    Vector reflection() const;
+    [[nodiscard]] long x() const;
+    [[nodiscard]] long y() const;
+    [[nodiscard]] Vector reflection() const;
     Vector& operator+=(const Vector&);
 private:
-    int32_t x_coordinate;
-    int32_t y_coordinate;
+    long x_coordinate;
+    long y_coordinate;
 };
 
 class Position {
 public:
-    Position(int32_t x, int32_t y);
+    Position(long x, long y);
     explicit Position(const Vector&);
-    [[nodiscard]] int32_t x() const;
-    [[nodiscard]] int32_t y() const;
-    Position reflection() const;
+    [[nodiscard]] long x() const;
+    [[nodiscard]] long y() const;
+    [[nodiscard]] Position reflection() const;
     static const Position& origin();
     Position& operator+=(const Vector&);
 private:
-    int32_t x_coordinate;
-    int32_t y_coordinate;
+    long x_coordinate;
+    long y_coordinate;
 };
 
 
 class Rectangle {
 public:
-    Rectangle(int32_t width, int32_t height, Position pos);
-    Rectangle(int32_t width, int32_t height);
-    int32_t width() const;
-    int32_t height() const;
-    const Position & pos() const;
-    Rectangle reflection() const;
+    Rectangle(long width, long height, Position pos);
+    Rectangle(long width, long height);
+    [[nodiscard]] long width() const;
+    [[nodiscard]] long height() const;
+    [[nodiscard]] const Position & pos() const;
+    [[nodiscard]] Rectangle reflection() const;
     Rectangle& operator+=(const Vector& vec);
-    int64_t area() const;
+    [[nodiscard]] int64_t area() const;
 private:
     Position left_bottom_corner;
-    int32_t w;
-    int32_t h;
+    long w;
+    long h;
 };
 
 class Rectangles {
@@ -66,10 +64,10 @@ public:
     ~Rectangles() = default;
     Rectangles& operator=(const Rectangles&) = default;
     Rectangles& operator=(Rectangles&&) noexcept = default;
-    const Rectangle& operator[](int32_t i) const;
-    Rectangle& operator[](int32_t i);
+    const Rectangle& operator[](long i) const;
+    Rectangle& operator[](long i);
     Rectangles& operator+=(const Vector& vec);
-    size_t size() const;
+    [[nodiscard]] size_t size() const;
     friend Rectangle merge_all(const Rectangles& rectangles);
 
 private:

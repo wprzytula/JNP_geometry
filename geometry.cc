@@ -1,19 +1,36 @@
-#include <cassert>
-#include "geometry.h"
+#ifdef NDEBUG
+const bool debug = false;
+#else
+const bool debug = true;
+#endif // NDEBUG
 
+#define safe_assert(expression) \
+    do { \
+        if (debug) { \
+            assert(expression); \
+        } \
+        else { \
+            if (!(expression)) \
+                exit(1); \
+        } \
+    } while (false)
+
+#include <cassert>
+#include <cstdlib>
+#include "geometry.h"
 
 using namespace std;
 
-Vector::Vector(int32_t x, int32_t y) {
+Vector::Vector(long x, long y) {
     x_coordinate = x;
     y_coordinate = y;
 }
 
-int32_t Vector::x() const {
+long Vector::x() const {
     return x_coordinate;
 }
 
-int32_t Vector::y() const {
+long Vector::y() const {
     return y_coordinate;
 }
 
@@ -35,7 +52,7 @@ Vector::Vector(const Position& pos)
     : x_coordinate(pos.x())
     , y_coordinate(pos.y()) {}
 
-Position::Position(int32_t x, int32_t y) {
+Position::Position(long x, long y) {
     x_coordinate = x;
     y_coordinate = y;
 }
@@ -44,11 +61,11 @@ Position::Position(const Vector& vec)
         : x_coordinate(vec.x())
         , y_coordinate(vec.y()) {}
 
-int32_t Position::x() const {
+long Position::x() const {
     return x_coordinate;
 }
 
-int32_t Position::y() const {
+long Position::y() const {
     return y_coordinate;
 }
 
@@ -71,21 +88,21 @@ Position& Position::operator+=(const Vector& vec) {
     return *this;
 }
 
-Rectangle::Rectangle(int32_t width, int32_t height, Position pos)
+Rectangle::Rectangle(long width, long height, Position pos)
     : left_bottom_corner(pos)
     , w(width)
     , h(height)
-    {assert(width > 0 && height > 0);}
+    {safe_assert(width > 0 && height > 0);}
 
-Rectangle::Rectangle(int32_t width, int32_t height) :
+Rectangle::Rectangle(long width, long height) :
     Rectangle(width, height, {0, 0}) {}
 
 
-int32_t Rectangle::width() const {
+long Rectangle::width() const {
     return w;
 }
 
-int32_t Rectangle::height() const {
+long Rectangle::height() const {
     return h;
 }
 
@@ -102,7 +119,7 @@ Rectangle& Rectangle::operator+=(const Vector& vec) {
     return *this;
 }
 
-int64_t Rectangle::area() const {
+long Rectangle::area() const {
     return width() * height();
 }
 
@@ -113,13 +130,13 @@ size_t Rectangles::size() const {
     return rectangles.size();
 }
 
-Rectangle& Rectangles::operator[](int32_t i) {
-    assert(i < size());
+Rectangle& Rectangles::operator[](long i) {
+    safe_assert(i < size());
     return rectangles[i];
 }
 
-const Rectangle& Rectangles::operator[](int32_t i) const {
-    assert(i < size());
+const Rectangle& Rectangles::operator[](long i) const {
+    safe_assert(i < size());
     return rectangles[i];
 }
 
@@ -141,13 +158,13 @@ bool vertical_merge_possible(const Rectangle& rect1, const Rectangle& rect2) {
 }
 
 Rectangle merge_horizontally(const Rectangle& rect1, const Rectangle& rect2) {
-    assert(horizontal_merge_possible(rect1, rect2));
+    safe_assert(horizontal_merge_possible(rect1, rect2));
     return {rect1.width(), rect1.height() + rect2.height(),
             rect1.pos()};
 }
 
 Rectangle merge_vertically(const Rectangle& rect1, const Rectangle& rect2) {
-    assert(vertical_merge_possible(rect1, rect2));
+    safe_assert(vertical_merge_possible(rect1, rect2));
     return {rect1.width() + rect2.width(), rect1.height(), rect1.pos()};
 }
 
@@ -155,24 +172,18 @@ Rectangle merge_all(const Rectangles& rects) {
     Rectangle result = rects.rectangles[0];
     for (auto it = rects.rectangles.begin() + 1,
             end = rects.rectangles.end(); it < end; ++it) {
-        assert(horizontal_merge_possible(result, *it) ||
+        safe_assert(horizontal_merge_possible(result, *it) ||
                vertical_merge_possible(result, *it));
         if (horizontal_merge_possible(result, *it)) {
             result = merge_horizontally(result, *it);
         } else if (vertical_merge_possible(result, *it)) {
             result = merge_vertically(result, *it);
         } else {
-            assert(false);
+            safe_assert(false);
         }
     }
     return result;
 }
-
-//Rectangles::Rectangles(const Rectangles& rects)
-//    : rectangles(rects.rectangles) {}
-//
-//Rectangles::Rectangles(Rectangles&& rects) noexcept
-//    : rectangles(std::move(rects.rectangles)) {}
 
 bool operator==(const Rectangle& rec1, const Rectangle& rec2) {
     return rec1.pos() == rec2.pos() &&
