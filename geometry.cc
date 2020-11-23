@@ -1,69 +1,46 @@
-#ifdef NDEBUG
-const bool debug = false;
-#else
-const bool debug = true;
-#endif // NDEBUG
-
-/* TODO sensownosc makra */
-#define safe_assert(expression) \
-    do { \
-        if (debug) { \
-            assert(expression); \
-        } else { \
-            if (!(expression)) \
-                exit(1); \
-        } \
-    } while (false)
-
 #include <cassert>
-#include <cstdlib>
 #include "geometry.h"
 
-
-Vector::Vector(long x, long y)
-    : x_coordinate(x)
-    , y_coordinate(y) {}
+Vector::Vector(Vector::coord_t x, Vector::coord_t y)
+    : x_coord(x), y_coord(y) {}
 
 Vector::Vector(const Position& pos)
-    : x_coordinate(pos.x())
-    , y_coordinate(pos.y()) {}
+    : x_coord(pos.x()), y_coord(pos.y()) {}
 
-long Vector::x() const {
-    return x_coordinate;
+Vector::coord_t Vector::x() const {
+    return x_coord;
 }
 
-long Vector::y() const {
-    return y_coordinate;
+Vector::coord_t Vector::y() const {
+    return y_coord;
 }
 
 Vector Vector::reflection() const {
-    return Vector(y_coordinate, x_coordinate);
+    return Vector(y_coord, x_coord);
 }
 
 Vector& Vector::operator+=(const Vector& vec) {
-    x_coordinate += vec.x();
-    y_coordinate += vec.y();
+    x_coord += vec.x();
+    y_coord += vec.y();
     return *this;
 }
 
-Position::Position(long x, long y)
-    : x_coordinate(x)
-    , y_coordinate(y) {}
+Position::Position(Position::coord_t x, Position::coord_t y)
+    : x_coord(x), y_coord(y) {}
 
 Position::Position(const Vector& vec)
-    : x_coordinate(vec.x())
-    , y_coordinate(vec.y()) {}
+    : x_coord(vec.x()), y_coord(vec.y()) {}
 
-long Position::x() const {
-    return x_coordinate;
+Position::coord_t Position::x() const {
+    return x_coord;
 }
 
-long Position::y() const {
-    return y_coordinate;
+Position::coord_t Position::y() const {
+    return y_coord;
 }
 
 Position Position::reflection() const {
-    return Position(y_coordinate, x_coordinate);
+    return Position(y_coord, x_coord);
 }
 
 const Position& Position::origin() {
@@ -72,27 +49,27 @@ const Position& Position::origin() {
 }
 
 Position& Position::operator+=(const Vector& vec) {
-    x_coordinate += vec.x();
-    y_coordinate += vec.y();
+    x_coord += vec.x();
+    y_coord += vec.y();
     return *this;
 }
 
-Rectangle::Rectangle(long width, long height, Position pos)
-    : w(width)
-    , h(height)
-    , left_bottom_corner(pos)
-    /* TODO czy nie robic wciecia tutaj */
-    {safe_assert(width > 0 && height > 0);}
+Rectangle::Rectangle(Rectangle::coord_t width, Rectangle::coord_t height, Position pos)
+    : w(width), h(height), left_bottom_corner(pos) {
+    assert(width > 0 && height > 0);
+}
 
-Rectangle::Rectangle(long width, long height) :
-    Rectangle(width, height, {0, 0})
-    {safe_assert(width > 0 && height > 0);}
+Rectangle::Rectangle(Rectangle::coord_t width, Rectangle::coord_t height) :
+    Rectangle(width, height, {0, 0}) {
+    assert(width > 0 && height > 0);
+}
 
-long Rectangle::width() const {
+/* TODO jednolinijkowce w pliku naglowkowym */
+Rectangle::coord_t Rectangle::width() const {
     return w;
 }
 
-long Rectangle::height() const {
+Rectangle::coord_t Rectangle::height() const {
     return h;
 }
 
@@ -100,11 +77,11 @@ const Position& Rectangle::pos() const {
     return left_bottom_corner;
 }
 
-long Rectangle::area() const {
+Rectangle::coord_t Rectangle::area() const {
     return width() * height();
 }
 
-Rectangle Rectangle::reflection() const{
+Rectangle Rectangle::reflection() const {
     return Rectangle{h, w, left_bottom_corner.reflection()};
 }
 
@@ -116,17 +93,17 @@ Rectangle& Rectangle::operator+=(const Vector& vec) {
 Rectangles::Rectangles(std::initializer_list<Rectangle> initializer_list)
     : rectangles(initializer_list) {}
 
-size_t Rectangles::size() const {
+std::vector<Rectangle>::size_type Rectangles::size() const {
     return rectangles.size();
 }
 
-const Rectangle& Rectangles::operator[](long i) const {
-    safe_assert(i >= 0 && i < size());
+const Rectangle& Rectangles::operator[](std::vector<Rectangle>::size_type i) const {
+    assert(i >= 0 && i < size());
     return rectangles[i];
 }
 
-Rectangle& Rectangles::operator[](long i) {
-    safe_assert(i >= 0 && i < size());
+Rectangle& Rectangles::operator[](std::vector<Rectangle>::size_type i) {
+    assert(i >= 0 && i < size());
     return rectangles[i];
 }
 
@@ -148,13 +125,13 @@ bool vertical_merge_possible(const Rectangle& rect1, const Rectangle& rect2) {
 }
 
 Rectangle merge_horizontally(const Rectangle& rect1, const Rectangle& rect2) {
-    safe_assert(horizontal_merge_possible(rect1, rect2));
+    assert(horizontal_merge_possible(rect1, rect2));
     return {rect1.width(), rect1.height() + rect2.height(),
             rect1.pos()};
 }
 
 Rectangle merge_vertically(const Rectangle& rect1, const Rectangle& rect2) {
-    safe_assert(vertical_merge_possible(rect1, rect2));
+    assert(vertical_merge_possible(rect1, rect2));
     return {rect1.width() + rect2.width(), rect1.height(), rect1.pos()};
 }
 
@@ -162,7 +139,7 @@ Rectangle merge_all(const Rectangles& rects) {
     Rectangle result = rects.rectangles[0];
     for (auto it = rects.rectangles.begin() + 1,
             end = rects.rectangles.end(); it < end; ++it) {
-        safe_assert(horizontal_merge_possible(result, *it) ||
+        assert(horizontal_merge_possible(result, *it) ||
                vertical_merge_possible(result, *it));
         if (horizontal_merge_possible(result, *it)) {
             result = merge_horizontally(result, *it);
@@ -190,7 +167,7 @@ bool operator==(const Rectangle& rec1, const Rectangle& rec2) {
 bool operator==(const Rectangles& rects1, const Rectangles& rects2) {
     if (rects1.size() != rects2.size())
         return false;
-    for (size_t i = 0; i < rects1.size(); ++i) {
+    for (std::vector<Rectangle>::size_type i = 0; i < rects1.size(); ++i) {
         if (!(rects1[i] == rects2[i]))
             return false;
     }

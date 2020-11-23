@@ -2,74 +2,71 @@
 #define GEOMETRY_H
 
 #include <vector>
+#include <cstdint>
 
 /* TODO czy konstruktorow w klasach wystarczy i czy sa dobre */
-/* TODO czy wszystkie slowka const sa dobrze podstawiane */
-/* TODO wybor long jako typu */
 
-/* TODO czy samo class Position czy wszytkie klasy zadeklarowac tutaj */
-class Position;
-
-class Vector {
-public:
-    Vector(long x, long y);
-    explicit Vector(const Position& pos);
-    /* TODO czy dawac nodiscard */
-    [[nodiscard]] long x() const;
-    [[nodiscard]] long y() const;
-    [[nodiscard]] Vector reflection() const;
-    Vector& operator+=(const Vector& vec);
-private:
-    long x_coordinate;
-    long y_coordinate;
-};
+class Vector;
 
 class Position {
 public:
-    Position(long x, long y);
+    using coord_t = int32_t;
+    Position(coord_t x, coord_t y);
     explicit Position(const Vector& vec);
-    [[nodiscard]] long x() const;
-    [[nodiscard]] long y() const;
+    [[nodiscard]] coord_t x() const;
+    [[nodiscard]] coord_t y() const;
     [[nodiscard]] Position reflection() const;
     static const Position& origin();
     Position& operator+=(const Vector& vec);
 private:
-    long x_coordinate;
-    long y_coordinate;
+    coord_t x_coord;
+    coord_t y_coord;
 };
 
+class Vector {
+public:
+    using coord_t = Position::coord_t;
+    Vector(coord_t x, coord_t y);
+    explicit Vector(const Position& pos);
+    [[nodiscard]] coord_t x() const;
+    [[nodiscard]] coord_t y() const;
+    [[nodiscard]] Vector reflection() const;
+    Vector& operator+=(const Vector& vec);
+private:
+    coord_t x_coord;
+    coord_t y_coord;
+};
 
 class Rectangle {
 public:
-    Rectangle(long width, long height, Position pos);
-    Rectangle(long width, long height);
-    [[nodiscard]] long width() const;
-    [[nodiscard]] long height() const;
+    using coord_t = Vector::coord_t;
+    Rectangle(coord_t width, coord_t height, Position pos);
+    Rectangle(coord_t width, coord_t height);
+    [[nodiscard]] coord_t width() const;
+    [[nodiscard]] coord_t height() const;
     [[nodiscard]] const Position& pos() const;
-    [[nodiscard]] long area() const;
+    [[nodiscard]] coord_t area() const;
     [[nodiscard]] Rectangle reflection() const;
     Rectangle& operator+=(const Vector& vec);
 private:
     Position left_bottom_corner;
-    long w;
-    long h;
+    coord_t w;
+    coord_t h;
 };
 
 class Rectangles {
 public:
+    using coord_t = Vector::coord_t;
     Rectangles() = default;
     Rectangles(std::initializer_list<Rectangle> rects);
     Rectangles(const Rectangles& rects) = default;
     Rectangles(Rectangles&& rects) noexcept = default;
-    /* TODO czy desktruktor ma byc */
-    ~Rectangles() = default;
     [[nodiscard]] size_t size() const;
     Rectangles& operator=(const Rectangles& rects) = default;
     Rectangles& operator=(Rectangles&& rects) noexcept = default;
-    const Rectangle& operator[](long i) const;
-    Rectangle& operator[](long i);
+    const Rectangle& operator[](std::vector<Rectangle>::size_type i) const;
+    Rectangle& operator[](std::vector<Rectangle>::size_type i);
     Rectangles& operator+=(const Vector& vec);
-    /* TODO czy friend jest akceptowalny i czy podwojna deklaracja merge_all */
     friend Rectangle merge_all(const Rectangles& rects);
 private:
     std::vector<Rectangle> rectangles;
@@ -80,7 +77,6 @@ Rectangle merge_horizontally(const Rectangle& rect1, const Rectangle& rect2);
 
 Rectangle merge_vertically(const Rectangle& rect1, const Rectangle& rect2);
 
-/* TODO czy merge_all jest efektywnie zaimplementowany */
 Rectangle merge_all(const Rectangles& rects);
 
 bool operator==(const Position& pos1, const Position& pos2);
