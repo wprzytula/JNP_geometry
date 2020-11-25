@@ -4,17 +4,23 @@
 #include <vector>
 #include <cstdint>
 
-/* TODO czy konstruktorow w klasach wystarczy i czy sa dobre */
-
 class Vector;
 
 class Position {
 public:
     using coord_t = int32_t;
-    Position(coord_t x, coord_t y);
+    Position() = delete;
+    Position(coord_t x, coord_t y)
+        : x_coord(x), y_coord(y) {}
+    Position(const Position&) = default;
+    Position(Position&&) = delete;
     explicit Position(const Vector& vec);
-    [[nodiscard]] coord_t x() const;
-    [[nodiscard]] coord_t y() const;
+    [[nodiscard]] coord_t x() const {
+        return x_coord;
+    }
+    [[nodiscard]] coord_t y() const {
+        return y_coord;
+    }
     [[nodiscard]] Position reflection() const;
     static const Position& origin();
     Position& operator+=(const Vector& vec);
@@ -26,11 +32,22 @@ private:
 class Vector {
 public:
     using coord_t = Position::coord_t;
-    Vector(coord_t x, coord_t y);
-    explicit Vector(const Position& pos);
-    [[nodiscard]] coord_t x() const;
-    [[nodiscard]] coord_t y() const;
-    [[nodiscard]] Vector reflection() const;
+    Vector() = delete;
+    Vector(coord_t x, coord_t y)
+        : x_coord(x), y_coord(y) {}
+    Vector(const Vector&) = default;
+    Vector(Vector&&) = delete;
+    explicit Vector(const Position& pos)
+        : x_coord(pos.x()), y_coord(pos.y()) {}
+    [[nodiscard]] coord_t x() const {
+        return x_coord;
+    }
+    [[nodiscard]] coord_t y() const {
+        return y_coord;
+    }
+    [[nodiscard]] Vector reflection() const {
+        return Vector(y_coord, x_coord);
+    }
     Vector& operator+=(const Vector& vec);
 private:
     coord_t x_coord;
@@ -40,13 +57,26 @@ private:
 class Rectangle {
 public:
     using coord_t = Vector::coord_t;
+    Rectangle() = delete;
     Rectangle(coord_t width, coord_t height, Position pos);
     Rectangle(coord_t width, coord_t height);
-    [[nodiscard]] coord_t width() const;
-    [[nodiscard]] coord_t height() const;
-    [[nodiscard]] const Position& pos() const;
-    [[nodiscard]] coord_t area() const;
-    [[nodiscard]] Rectangle reflection() const;
+    Rectangle(const Rectangle&) = default;
+    Rectangle(Rectangle&&) = delete;
+    [[nodiscard]] Rectangle::coord_t width() const {
+        return w;
+    }
+    [[nodiscard]] coord_t height() const {
+        return h;
+    }
+    [[nodiscard]] const Position& pos() const {
+        return left_bottom_corner;
+    }
+    [[nodiscard]] coord_t area() const {
+        return w * h;
+    }
+    [[nodiscard]] Rectangle reflection() const {
+        return Rectangle{h, w, left_bottom_corner.reflection()};
+    }
     Rectangle& operator+=(const Vector& vec);
 private:
     Position left_bottom_corner;
@@ -58,10 +88,13 @@ class Rectangles {
 public:
     using coord_t = Vector::coord_t;
     Rectangles() = default;
-    Rectangles(std::initializer_list<Rectangle> rects);
+    Rectangles(std::initializer_list<Rectangle> initializer_list)
+        : rectangles(initializer_list) {}
     Rectangles(const Rectangles& rects) = default;
     Rectangles(Rectangles&& rects) noexcept = default;
-    [[nodiscard]] size_t size() const;
+    [[nodiscard]] size_t size() const {
+        return rectangles.size();
+    }
     Rectangles& operator=(const Rectangles& rects) = default;
     Rectangles& operator=(Rectangles&& rects) noexcept = default;
     const Rectangle& operator[](std::vector<Rectangle>::size_type i) const;
@@ -97,12 +130,8 @@ Rectangle operator+(const Rectangle& rect, const Vector& vec);
 
 Rectangle operator+(const Vector& vec, const Rectangle& rect);
 
-Rectangles operator+(const Rectangles& rects, const Vector& vec);
+Rectangles operator+(Rectangles rects, const Vector& vec);
 
-Rectangles operator+(Rectangles&& rects, const Vector& vec);
-
-Rectangles operator+(const Vector& vec, const Rectangles& rects);
-
-Rectangles operator+(const Vector& vec, Rectangles&& rects);
+Rectangles operator+(const Vector& vec, Rectangles rects);
 
 #endif // GEOMETRY_H

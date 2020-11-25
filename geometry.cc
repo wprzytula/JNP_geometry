@@ -1,43 +1,8 @@
 #include <cassert>
 #include "geometry.h"
 
-Vector::Vector(Vector::coord_t x, Vector::coord_t y)
-    : x_coord(x), y_coord(y) {}
-
-Vector::Vector(const Position& pos)
-    : x_coord(pos.x()), y_coord(pos.y()) {}
-
-Vector::coord_t Vector::x() const {
-    return x_coord;
-}
-
-Vector::coord_t Vector::y() const {
-    return y_coord;
-}
-
-Vector Vector::reflection() const {
-    return Vector(y_coord, x_coord);
-}
-
-Vector& Vector::operator+=(const Vector& vec) {
-    x_coord += vec.x();
-    y_coord += vec.y();
-    return *this;
-}
-
-Position::Position(Position::coord_t x, Position::coord_t y)
-    : x_coord(x), y_coord(y) {}
-
 Position::Position(const Vector& vec)
     : x_coord(vec.x()), y_coord(vec.y()) {}
-
-Position::coord_t Position::x() const {
-    return x_coord;
-}
-
-Position::coord_t Position::y() const {
-    return y_coord;
-}
 
 Position Position::reflection() const {
     return Position(y_coord, x_coord);
@@ -54,6 +19,12 @@ Position& Position::operator+=(const Vector& vec) {
     return *this;
 }
 
+Vector& Vector::operator+=(const Vector& vec) {
+    x_coord += vec.x();
+    y_coord += vec.y();
+    return *this;
+}
+
 Rectangle::Rectangle(Rectangle::coord_t width, Rectangle::coord_t height, Position pos)
     : w(width), h(height), left_bottom_corner(pos) {
     assert(width > 0 && height > 0);
@@ -64,37 +35,9 @@ Rectangle::Rectangle(Rectangle::coord_t width, Rectangle::coord_t height) :
     assert(width > 0 && height > 0);
 }
 
-/* TODO jednolinijkowce w pliku naglowkowym */
-Rectangle::coord_t Rectangle::width() const {
-    return w;
-}
-
-Rectangle::coord_t Rectangle::height() const {
-    return h;
-}
-
-const Position& Rectangle::pos() const {
-    return left_bottom_corner;
-}
-
-Rectangle::coord_t Rectangle::area() const {
-    return width() * height();
-}
-
-Rectangle Rectangle::reflection() const {
-    return Rectangle{h, w, left_bottom_corner.reflection()};
-}
-
 Rectangle& Rectangle::operator+=(const Vector& vec) {
     left_bottom_corner += vec;
     return *this;
-}
-
-Rectangles::Rectangles(std::initializer_list<Rectangle> initializer_list)
-    : rectangles(initializer_list) {}
-
-std::vector<Rectangle>::size_type Rectangles::size() const {
-    return rectangles.size();
 }
 
 const Rectangle& Rectangles::operator[](std::vector<Rectangle>::size_type i) const {
@@ -194,22 +137,10 @@ Rectangle operator+(const Vector& vec, const Rectangle& rect) {
     return rect + vec;
 }
 
-Rectangles operator+(const Rectangles& rects, const Vector& vec) {
-    Rectangles new_rects(rects);
-    new_rects += vec;
-    return new_rects;
+Rectangles operator+(Rectangles rects, const Vector& vec) {
+    return rects += vec;
 }
-
-Rectangles operator+(Rectangles&& rects, const Vector& vec) {
-    Rectangles new_rects(std::move(rects));
-    new_rects += vec;
-    return new_rects;
-}
-
-Rectangles operator+(const Vector& vec, const Rectangles& rects) {
-    return rects + vec;
-}
-
-Rectangles operator+(const Vector& vec, Rectangles&& rects) {
-    return std::move(rects) + vec;
+//TODO: Która wersja? Góra czy dół?
+Rectangles operator+(const Vector& vec, Rectangles rects) {
+    return std::move(rects) += vec;
 }
