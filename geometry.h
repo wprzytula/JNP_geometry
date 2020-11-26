@@ -13,9 +13,7 @@ public:
     Position(coord_t x, coord_t y)
         : x_coord(x), y_coord(y) {}
     Position(const Position&) = default;
-//    Position(Position&&) = delete;
     Position& operator=(const Position&) = default;
-//    Position& operator=(Position&&) = delete;
     explicit Position(const Vector& vec);
     [[nodiscard]] coord_t x() const {
         return x_coord;
@@ -40,9 +38,7 @@ public:
     Vector(coord_t x, coord_t y)
         : x_coord(x), y_coord(y) {}
     Vector(const Vector&) = default;
-//    Vector(Vector&&) = delete;
     Vector& operator=(const Vector&) = default;
-//    Vector& operator=(Vector&&) = delete;
     explicit Vector(const Position& pos)
         : x_coord(pos.x()), y_coord(pos.y()) {}
     [[nodiscard]] coord_t x() const {
@@ -67,9 +63,7 @@ public:
     Rectangle(coord_t width, coord_t height, Position pos);
     Rectangle(coord_t width, coord_t height);
     Rectangle(const Rectangle&) = default;
-//    Rectangle(Rectangle&&) = delete;
     Rectangle& operator=(const Rectangle&) = default;
-//    Rectangle& operator=(Rectangle&&) = delete;
     [[nodiscard]] Rectangle::coord_t width() const {
         return w;
     }
