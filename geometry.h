@@ -13,7 +13,9 @@ public:
     Position(coord_t x, coord_t y)
         : x_coord(x), y_coord(y) {}
     Position(const Position&) = default;
-    Position(Position&&) = delete;
+//    Position(Position&&) = delete;
+    Position& operator=(const Position&) = default;
+//    Position& operator=(Position&&) = delete;
     explicit Position(const Vector& vec);
     [[nodiscard]] coord_t x() const {
         return x_coord;
@@ -21,7 +23,9 @@ public:
     [[nodiscard]] coord_t y() const {
         return y_coord;
     }
-    [[nodiscard]] Position reflection() const;
+    [[nodiscard]] Position reflection() const {
+        return Position(y_coord, x_coord);
+    }
     static const Position& origin();
     Position& operator+=(const Vector& vec);
 private:
@@ -36,7 +40,9 @@ public:
     Vector(coord_t x, coord_t y)
         : x_coord(x), y_coord(y) {}
     Vector(const Vector&) = default;
-    Vector(Vector&&) = delete;
+//    Vector(Vector&&) = delete;
+    Vector& operator=(const Vector&) = default;
+//    Vector& operator=(Vector&&) = delete;
     explicit Vector(const Position& pos)
         : x_coord(pos.x()), y_coord(pos.y()) {}
     [[nodiscard]] coord_t x() const {
@@ -61,7 +67,9 @@ public:
     Rectangle(coord_t width, coord_t height, Position pos);
     Rectangle(coord_t width, coord_t height);
     Rectangle(const Rectangle&) = default;
-    Rectangle(Rectangle&&) = delete;
+//    Rectangle(Rectangle&&) = delete;
+    Rectangle& operator=(const Rectangle&) = default;
+//    Rectangle& operator=(Rectangle&&) = delete;
     [[nodiscard]] Rectangle::coord_t width() const {
         return w;
     }
@@ -120,18 +128,32 @@ bool operator==(const Rectangle& rect1, const Rectangle& rect2);
 
 bool operator==(const Rectangles& rects1, const Rectangles& rects2);
 
-Position operator+(const Vector& vec, const Position& pos);
+inline Position operator+(const Position& pos, const Vector& vec) {
+    return {pos.x() + vec.x(), pos.y() + vec.y()};
+}
 
-Position operator+(const Position& pos, const Vector& vec);
+inline Position operator+(const Vector& vec, const Position& pos) {
+    return pos + vec;
+}
 
-Vector operator+(const Vector& vec1, const Vector& vec2);
+inline Vector operator+(const Vector& vec1, const Vector& vec2) {
+    return {vec1.x() + vec2.x(), vec1.y() + vec2.y()};
+}
 
-Rectangle operator+(const Rectangle& rect, const Vector& vec);
+inline Rectangle operator+(const Rectangle& rect, const Vector& vec) {
+    return {rect.width(), rect.height(), rect.pos() + vec};
+}
 
-Rectangle operator+(const Vector& vec, const Rectangle& rect);
+inline Rectangle operator+(const Vector& vec, const Rectangle& rect) {
+    return rect + vec;
+}
 
-Rectangles operator+(Rectangles rects, const Vector& vec);
+inline Rectangles operator+(Rectangles rects, const Vector& vec) {
+    return std::move(rects += vec);
+}
 
-Rectangles operator+(const Vector& vec, Rectangles rects);
+inline Rectangles operator+(const Vector& vec, Rectangles rects) {
+    return std::move(rects += vec);
+}
 
 #endif // GEOMETRY_H

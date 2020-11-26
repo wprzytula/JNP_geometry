@@ -4,10 +4,6 @@
 Position::Position(const Vector& vec)
     : x_coord(vec.x()), y_coord(vec.y()) {}
 
-Position Position::reflection() const {
-    return Position(y_coord, x_coord);
-}
-
 const Position& Position::origin() {
     static const Position orig(0, 0);
     return orig;
@@ -115,32 +111,4 @@ bool operator==(const Rectangles& rects1, const Rectangles& rects2) {
             return false;
     }
     return true;
-}
-
-Position operator+(const Vector& vec, const Position& pos) {
-    return pos + vec;
-}
-
-Position operator+(const Position& pos, const Vector& vec) {
-    return {pos.x() + vec.x(), pos.y() + vec.y()};
-}
-
-Vector operator+(const Vector& vec1, const Vector& vec2) {
-    return {vec1.x() + vec2.x(), vec1.y() + vec2.y()};
-}
-
-Rectangle operator+(const Rectangle& rect, const Vector& vec) {
-    return {rect.width(), rect.height(), rect.pos() + vec};
-}
-
-Rectangle operator+(const Vector& vec, const Rectangle& rect) {
-    return rect + vec;
-}
-
-Rectangles operator+(Rectangles rects, const Vector& vec) {
-    return rects += vec;
-}
-//TODO: Która wersja? Góra czy dół?
-Rectangles operator+(const Vector& vec, Rectangles rects) {
-    return std::move(rects) += vec;
 }
